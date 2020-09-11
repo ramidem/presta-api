@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const User = require("./../models/User");
 
@@ -24,6 +25,48 @@ const User = require("./../models/User");
 // });
 
 /* method:  POST
+ * route:   /users/login
+ * desc:    login a user
+ */
+router.post("/login", (req, res, next) => {
+  // check fields
+  let { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).send({
+      error: "Username and password are required",
+    });
+  }
+
+  User.findOne({ username }).then((user) => {
+    if (user) {
+      bcrypt.compare(password, user.password).then((result) => {
+        if (result) {
+          let { _id, username } = user;
+          let token = jwt.sign({ _id: user._id }, "secret_key");
+
+          res.status(200).send({
+            message: "Logged in successfully",
+            token,
+            user,
+          });
+        } else {
+          res.status(400).send({
+            error: "Invalid password",
+          });
+        }
+      });
+    } else {
+      res.status(404).send({
+        error: "Username does not exist",
+      });
+    }
+  });
+
+  // res.send("hello");
+});
+
+/* method:  POST
  * route:   /users/register
  * desc:    createa a user
  */
@@ -41,7 +84,7 @@ router.post("/register", (req, res, next) => {
       req.body.password = hash;
 
       User.create(req.body)
-        .then((user) => res.send(user))
+        .then((user) => res.status(201).send(user))
         .catch(next);
     });
   });

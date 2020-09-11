@@ -11,11 +11,13 @@ const UserSchema = new Schema(
   {
     fullname: {
       type: String,
+      trim: true,
       required: [true, "Name is required"],
     },
     username: {
       type: String,
       required: [true, "Username is required"],
+      trim: true,
       unique: true,
     },
     email: {
@@ -31,11 +33,13 @@ const UserSchema = new Schema(
     },
     password: {
       type: String,
+      trim: true,
       required: [true, "Password field required"],
       minlength: [8, "Password should be atleast 8 characters"],
     },
     bio: {
       type: String,
+      default: null,
     },
     isAdmin: {
       type: Boolean,
