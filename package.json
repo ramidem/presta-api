@@ -1,0 +1,14 @@
+{
+  "name": "api-presta-app",
+  "version": "1.0.0",
+  "description": "Presta API for Presta App frontend",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "author": "Med Aduh",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
