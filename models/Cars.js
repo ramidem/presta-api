@@ -43,6 +43,10 @@ const CarsSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     controlNumber: {
       type: String,
       unique: true,

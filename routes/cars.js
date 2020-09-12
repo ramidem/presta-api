@@ -19,7 +19,15 @@ router.get("/", (req, res, next) => {
  */
 router.get("/:id", (req, res, next) => {
   Car.findById(req.params.id)
-    .then((car) => res.send(car))
+    .then((car) => {
+      if (car) {
+        res.send(car);
+      } else {
+        res.status(404).send({
+          message: "Not found",
+        });
+      }
+    })
     .catch(next);
 });
 
@@ -70,16 +78,6 @@ router.post("/", auth, admin, (req, res, next) => {
 router.put("/:id", auth, admin, (req, res, next) => {
   Car.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then((car) => res.send(car))
-    .catch(next);
-});
-
-/* method:  DELETE
- * route:   /cars/:id
- * desc:    delete a car
- */
-router.delete("/:id", auth, admin, (req, res, next) => {
-  Car.findByIdAndDelete(req.params.id)
-    .then((car) => res.sendStatus(204))
     .catch(next);
 });
 
