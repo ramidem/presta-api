@@ -45,7 +45,6 @@ app.use("/users", users);
 
 // error handling middleware
 app.use((err, req, res, next) => {
-  console.log(err.message);
   res.status(400).send({
     error: err.message,
   });

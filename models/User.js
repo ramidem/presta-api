@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
+const { isEmail } = require("validator");
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
@@ -26,10 +27,7 @@ const UserSchema = new Schema(
       required: [true, "Email is required"],
       unique: true,
       trim: true,
-      match: [
-        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        "Please provide a valid email address",
-      ],
+      validate: [isEmail, "Please provide a valid email address"],
     },
     password: {
       type: String,

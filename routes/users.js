@@ -1,74 +1,17 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const passport = require("passport");
 
 const User = require("./../models/User");
 
-/* method:  GET
- * route:   /users
- * desc:    get all users
- */
-// router.get("/", (req, res, next) => {
-//   res.json({
-//     message: "get all users",
-//   });
-// });
-
-/* method:  GET
- * route:   /users/:id
- * desc:    get a user
- */
-// router.get("/:id", (req, res, next) => {
-//   res.json({
-//     message: "get a user",
-//   });
-// });
-
-/* method:  POST
- * route:   /users/login
- * desc:    login a user
- */
-router.post("/login", (req, res, next) => {
-  // check fields
-  let { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).send({
-      error: "Username and password are required",
-    });
-  }
-
-  User.findOne({ username }).then((user) => {
-    if (user) {
-      bcrypt.compare(password, user.password).then((result) => {
-        if (result) {
-          let { _id, username } = user;
-          let token = jwt.sign({ _id: user._id }, "secret_key");
-
-          res.status(200).send({
-            message: "Logged in successfully",
-            token,
-            user,
-          });
-        } else {
-          res.status(400).send({
-            error: "Invalid password",
-          });
-        }
-      });
-    } else {
-      res.status(404).send({
-        error: "Username does not exist",
-      });
-    }
-  });
-
-  // res.send("hello");
-});
+require("./../passport-setup");
 
 /* method:  POST
  * route:   /users/register
  * desc:    createa a user
+ * auth:    no
+ * token:   no
  */
 router.post("/register", (req, res, next) => {
   let { password, confirmPassword } = req.body;
@@ -90,14 +33,107 @@ router.post("/register", (req, res, next) => {
   });
 });
 
+/* method:  POST
+ * route:   /users/login
+ * desc:    login a user
+ * auth:    no
+ * token:   no
+ */
+router.post("/login", (req, res, next) => {
+  // check fields
+  let { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).send({
+      error: "Username and password are required",
+    });
+  }
+
+  User.findOne({ username }).then((user) => {
+    if (user) {
+      bcrypt.compare(password, user.password).then((result) => {
+        if (result) {
+          let { _id, username } = user;
+          let token = jwt.sign({ _id: user._id }, "secret_key");
+
+          res.status(200).send({
+            token,
+            user,
+          });
+        } else {
+          res.status(400).send({
+            error: "Invalid password",
+          });
+        }
+      });
+    } else {
+      res.status(404).send({
+        error: "Username does not exist",
+      });
+    }
+  });
+});
+
+/*
+ * Admin Only
+ * PROTECTED ROUTES
+ * ============================================================================
+ */
+
+let auth = passport.authenticate("jwt", { session: false });
+
+/* method:  GET
+ * route:   /users
+ * desc:    get all users
+ * auth:    admin
+ * token:   yes
+ */
+router.get("/", auth, (req, res, next) => {
+  User.find()
+    .then((users) => res.send(users))
+    .catch(next);
+});
+
+/* method:  GET
+ * route:   /users/:username
+ * desc:    get a user
+ * auth:    admin
+ * token:   yes
+ */
+router.get("/:username", auth, (req, res, next) => {
+  User.findOne({ username: req.params.username })
+    .then((user) => {
+      let { _id } = req.user;
+      let { id } = user;
+
+      if (id == _id) {
+        res.send(user);
+      } else {
+        res.sendStatus(403);
+      }
+    })
+    .catch(next);
+});
+
 /* method:  PUT
- * route:   /users/:id
+ * route:   /users/:username
  * desc:    edit a user
  */
-// router.put("/:id", (req, res, next) => {
-//   res.json({
-//     message: "edit a user",
-//   });
+// router.put("/:username", auth, (req, res, next) => {
+//   User.findOneAndUpdate({ username: req.params.username }, req.body, {
+//     new: true,
+//   })
+//     .then((user) => {
+//       let { _id } = req.user;
+//       let { id } = user;
+
+//       if (id == _id) {
+//         res.send(user);
+//       } else {
+//         res.sendStatus(403);
+//       }
+//     })
+//     .catch(next);
 // });
 
 /* method:  DELETE
