@@ -8,6 +8,7 @@ const UserSchema = new Schema(
     fullname: {
       type: String,
       trim: true,
+      lowercase: true,
       required: [true, "Name is required"],
     },
     username: {
@@ -15,6 +16,7 @@ const UserSchema = new Schema(
       required: [true, "Username is required"],
       trim: true,
       unique: true,
+      lowercase: true,
       minlength: 8,
       maxlength: 20,
       match: [
@@ -27,6 +29,7 @@ const UserSchema = new Schema(
       required: [true, "Email is required"],
       unique: true,
       trim: true,
+      lowercase: true,
       validate: [isEmail, "Please provide a valid email address"],
     },
     password: {
