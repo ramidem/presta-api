@@ -41,7 +41,7 @@ const CarsSchema = new Schema(
     },
     isAvailable: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     controlNumber: {
       type: String,

@@ -68,16 +68,16 @@ router.post("/", auth, admin, (req, res, next) => {
  * desc:    edit a car
  */
 router.put("/:id", (req, res, next) => {
-  res.json({
-    message: "edit a car",
-  });
+  Car.findByIdAndUpdate(req.params.id, req.body, { new: true }).then((car) =>
+    res.send(car)
+  );
 });
 
 /* method:  DELETE
  * route:   /cars/:id
  * desc:    delete a car
  */
-router.delete("/:id", (req, res, next) => {
+router.delete("/:id", auth, admin, (req, res, next) => {
   res.json({
     message: "delete a car",
   });
