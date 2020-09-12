@@ -18,9 +18,9 @@ router.get("/", (req, res, next) => {
  * desc:    get a car
  */
 router.get("/:id", (req, res, next) => {
-  res.json({
-    message: "get a car",
-  });
+  Car.findById(req.params.id)
+    .then((car) => res.send(car))
+    .catch(next);
 });
 
 /*
