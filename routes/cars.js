@@ -67,10 +67,10 @@ router.post("/", auth, admin, (req, res, next) => {
  * route:   /cars/:id
  * desc:    edit a car
  */
-router.put("/:id", (req, res, next) => {
-  Car.findByIdAndUpdate(req.params.id, req.body, { new: true }).then((car) =>
-    res.send(car)
-  );
+router.put("/:id", auth, admin, (req, res, next) => {
+  Car.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    .then((car) => res.send(car))
+    .catch(next);
 });
 
 /* method:  DELETE
@@ -78,9 +78,9 @@ router.put("/:id", (req, res, next) => {
  * desc:    delete a car
  */
 router.delete("/:id", auth, admin, (req, res, next) => {
-  res.json({
-    message: "delete a car",
-  });
+  Car.findByIdAndDelete(req.params.id)
+    .then((car) => res.sendStatus(204))
+    .catch(next);
 });
 
 module.exports = router;
