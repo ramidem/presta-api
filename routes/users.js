@@ -146,4 +146,14 @@ router.get("/:username", auth, (req, res, next) => {
 //   });
 // });
 
+/* method:  GET
+ * route:   /users/profile
+ * desc:    get user profile
+ * auth:    yes
+ * token:   yes
+ */
+router.get("/profile", auth, (req, res, next) => {
+  res.send(req.user);
+});
+
 module.exports = router;
