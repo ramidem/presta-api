@@ -53,12 +53,12 @@ router.post("/login", (req, res, next) => {
     if (user) {
       bcrypt.compare(password, user.password).then((result) => {
         if (result) {
-          let { _id, username } = user;
+          let { _id, username, fullname, email, isAdmin } = user;
           let token = jwt.sign({ _id: user._id }, "secret_key");
 
           res.status(200).send({
             token,
-            user,
+            user: { _id, username, fullname, email, isAdmin },
           });
         } else {
           res.status(400).send({
