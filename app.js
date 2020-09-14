@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 require("dotenv").config();
 
@@ -35,6 +36,7 @@ app.use((req, res, next) => {
 // parse incoming requests to json format
 // this will create body attribute to req object
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("hello");
