@@ -17,8 +17,6 @@ const UserSchema = new Schema(
       trim: true,
       unique: true,
       lowercase: true,
-      minlength: 8,
-      maxlength: 20,
       match: [
         /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/,
         "Please provide a valid username",
