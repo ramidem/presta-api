@@ -9,6 +9,7 @@ const port = process.env.PORT || 5000;
 // import routes
 const cars = require("./routes/cars");
 const users = require("./routes/users");
+const reservations = require("./routes/reservations");
 
 // connect to database using mongoose
 // mongoose.connect(process.env.ATLAS, {
@@ -42,6 +43,7 @@ app.get("/", (req, res) => {
 // routes middlewares
 app.use("/cars", cars);
 app.use("/users", users);
+app.use("/reservations", reservations);
 
 // error handling middleware
 app.use((err, req, res, next) => {

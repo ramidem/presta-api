@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const CarsSchema = new Schema(
+const CarSchema = new Schema(
   {
     model: {
       type: String,
@@ -52,8 +52,12 @@ const CarsSchema = new Schema(
       unique: true,
       uppercase: true,
     },
+    dailyRate: {
+      type: Number,
+      min: 0,
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Car", CarsSchema);
+module.exports = mongoose.model("Car", CarSchema);

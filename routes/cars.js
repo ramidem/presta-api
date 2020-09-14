@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const passport = require("passport");
 
-const Car = require("./../models/Cars");
+const Car = require("./../models/Car");
 
 /* method:  GET
  * route:   /cars
