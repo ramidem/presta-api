@@ -51,7 +51,6 @@ const CarSchema = new Schema(
     },
     image: {
       type: String,
-      required: [true, "Please provide image"],
     },
   },
   { timestamps: true }
