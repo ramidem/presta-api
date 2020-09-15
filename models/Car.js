@@ -45,14 +45,13 @@ const CarSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    controlNumber: {
-      type: String,
-      unique: true,
-      uppercase: true,
-    },
     dailyRate: {
       type: Number,
       min: 0,
+    },
+    image: {
+      type: String,
+      required: [true, "Please provide image"],
     },
   },
   { timestamps: true }

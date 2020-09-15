@@ -1,7 +1,20 @@
 const router = require("express").Router();
 const passport = require("passport");
+const multer = require("multer");
 
 const Car = require("./../models/Car");
+
+// setup multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "assets/images");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 /* method:  GET
  * route:   /cars
@@ -53,18 +66,19 @@ const admin = (req, res, next) => {
  * route:   /cars
  * desc:    add a car
  */
-router.post("/", auth, admin, (req, res, next) => {
-  let controlNumber = () => {
-    const chars = "PRESTA1234567890".split("");
-    const limit = 6;
-    let code = [];
-    for (let i = 0; i <= limit; i++) {
-      code.push(chars[Math.floor(Math.random() * (chars.length + 1))]);
-    }
-    return code.join("");
-  };
+router.post("/", auth, admin, upload.single("image"), (req, res, next) => {
+  // let controlNumber = () => {
+  //   const chars = "PRESTA1234567890".split("");
+  //   const limit = 6;
+  //   let code = [];
+  //   for (let i = 0; i <= limit; i++) {
+  //     code.push(chars[Math.floor(Math.random() * (chars.length + 1))]);
+  //   }
+  //   return code.join("");
+  // };
+  // req.body.controlNumber = controlNumber();
 
-  req.body.controlNumber = controlNumber();
+  req.body.image = "public/" + req.file.filename;
 
   Car.create(req.body)
     .then((car) => res.status(201).send(car))
@@ -75,7 +89,11 @@ router.post("/", auth, admin, (req, res, next) => {
  * route:   /cars/:id
  * desc:    edit a car
  */
-router.put("/:id", auth, admin, (req, res, next) => {
+router.put("/:id", auth, admin, upload.single("image"), (req, res, next) => {
+  if (req.file) {
+    req.body.image = "public/" + req.file.filename;
+  }
+
   Car.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then((car) => res.send(car))
     .catch(next);

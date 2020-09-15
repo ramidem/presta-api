@@ -13,8 +13,8 @@ const users = require("./routes/users");
 const reservations = require("./routes/reservations");
 
 // connect to database using mongoose
-// mongoose.connect("mongodb://localhost:27017/presta", {
-mongoose.connect(process.env.ATLAS, {
+// mongoose.connect(process.env.ATLAS, {
+mongoose.connect("mongodb://localhost:27017/presta", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
@@ -32,6 +32,9 @@ app.use((req, res, next) => {
   console.log(req.method, req.path);
   next();
 });
+
+// serve static files
+app.use("/public", express.static("assets/images"));
 
 // parse incoming requests to json format
 // this will create body attribute to req object
