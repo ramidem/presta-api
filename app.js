@@ -13,8 +13,8 @@ const users = require("./routes/users");
 const reservations = require("./routes/reservations");
 
 // connect to database using mongoose
-// mongoose.connect(process.env.ATLAS, {
-mongoose.connect("mongodb://localhost:27017/presta", {
+// mongoose.connect("mongodb://localhost:27017/presta", {
+mongoose.connect(process.env.ATLAS, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
