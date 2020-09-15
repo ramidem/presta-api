@@ -21,17 +21,11 @@ const CarSchema = new Schema(
       lowercase: true,
       required: [true, "Please provide a car description"],
     },
-    size: {
-      type: String,
-      trim: true,
-      lowercase: true,
-      required: [true, "Please provide a car type"],
-    },
     doors: {
       type: Number,
       required: [true, "Please provide number of car doors"],
     },
-    airbags: {
+    bags: {
       type: Number,
       required: [true, "Please provide number of car airbags"],
     },
@@ -46,6 +40,10 @@ const CarSchema = new Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
     },
     controlNumber: {
       type: String,

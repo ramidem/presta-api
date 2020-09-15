@@ -153,7 +153,7 @@ router.get("/:username", auth, (req, res, next) => {
  * token:   yes
  */
 router.get("/profile", auth, (req, res, next) => {
-  res.send(req.user);
+  res.send("hello");
 });
 
 module.exports = router;
