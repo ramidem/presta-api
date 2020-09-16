@@ -99,4 +99,19 @@ router.put("/:id", auth, admin, upload.single("image"), (req, res, next) => {
     .catch(next);
 });
 
+/* method:  DELETE
+ * route:   /cars/:id
+ * desc:    delete a car
+ */
+router.delete("/:id", auth, admin, (req, res, next) => {
+  Car.findByIdAndDelete(req.params.id)
+    .then((car) =>
+      res.send({
+        car,
+        message: "Car has been deleted",
+      })
+    )
+    .catch(next);
+});
+
 module.exports = router;

@@ -25,6 +25,7 @@ const ReservationSchema = new Schema(
       type: String,
       default: "pending",
     },
+    numberOfDays: Number,
     startDate: Date,
     endDate: Date,
   },
