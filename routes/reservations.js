@@ -11,7 +11,14 @@ let auth = passport.authenticate("jwt", { session: false });
  * desc:    get all reservations
  */
 router.get("/", auth, (req, res, next) => {
-  Reservation.find()
+  let filter = {};
+  if (!req.user.isAdmin) {
+    filter = { customerId: req.user._id };
+  }
+
+  Reservation.find(filter)
+    .populate("customerId", ["fullname", "email"])
+    .populate("carId")
     .then((reservation) => res.send(reservation))
     .catch(next);
 });
@@ -21,7 +28,18 @@ router.get("/", auth, (req, res, next) => {
  * desc:    get a reservation
  */
 router.get("/:id", auth, (req, res, next) => {
-  Reservation.findById(req.params.id)
+  let filter = { _id: req.params.id };
+
+  if (!req.user.isAdmin) {
+    filter = {
+      ...filter,
+      customerId: req.user._id,
+    };
+  }
+
+  Reservation.findOne(filter)
+    .populate("customerId", ["fullname", "email"])
+    .populate("carId")
     .then((reservation) => {
       if (reservation) {
         res.send(reservation);
