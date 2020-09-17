@@ -10,7 +10,7 @@ let auth = passport.authenticate("jwt", { session: false });
  * route:   /reservations
  * desc:    get all reservations
  */
-router.get("/", (req, res, next) => {
+router.get("/", auth, (req, res, next) => {
   Reservation.find()
     .then((reservation) => res.send(reservation))
     .catch(next);
@@ -20,7 +20,7 @@ router.get("/", (req, res, next) => {
  * route:   /reservation/:id
  * desc:    get a reservation
  */
-router.get("/:id", (req, res, next) => {
+router.get("/:id", auth, (req, res, next) => {
   Reservation.findById(req.params.id)
     .then((reservation) => {
       if (reservation) {
