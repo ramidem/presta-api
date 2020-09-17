@@ -6,6 +6,34 @@ const Car = require("../models/Car");
 
 let auth = passport.authenticate("jwt", { session: false });
 
+/* method:  GET
+ * route:   /reservations
+ * desc:    get all reservations
+ */
+router.get("/", (req, res, next) => {
+  Reservation.find()
+    .then((reservation) => res.send(reservation))
+    .catch(next);
+});
+
+/* method:  GET
+ * route:   /reservation/:id
+ * desc:    get a reservation
+ */
+router.get("/:id", (req, res, next) => {
+  Reservation.findById(req.params.id)
+    .then((reservation) => {
+      if (reservation) {
+        res.send(reservation);
+      } else {
+        res.status(404).send({
+          message: "Not found",
+        });
+      }
+    })
+    .catch(next);
+});
+
 /* method:  POST
  * route:   /reservations
  * desc:    create a reservation
