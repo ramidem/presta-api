@@ -6,6 +6,16 @@ const Car = require("../models/Car");
 
 let auth = passport.authenticate("jwt", { session: false });
 
+const admin = (req, res, next) => {
+  if (req.user.isAdmin) {
+    next();
+  } else {
+    res.status(403).send({
+      error: "Forbidden",
+    });
+  }
+};
+
 /* method:  GET
  * route:   /reservations
  * desc:    get all reservations
@@ -79,6 +89,16 @@ router.post("/", auth, (req, res, next) => {
       .then((reservation) => res.status(201).send(reservation))
       .catch(next);
   });
+});
+
+/* method:  PUT
+ * route:   /reservations/:id
+ * desc:    edit a reservation
+ */
+router.put("/:id", auth, admin, (req, res, next) => {
+  Reservation.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    .then((reservation) => res.send(reservation))
+    .catch(next);
 });
 
 module.exports = router;
