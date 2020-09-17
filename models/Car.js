@@ -6,19 +6,16 @@ const CarSchema = new Schema(
     model: {
       type: String,
       trim: true,
-      lowercase: true,
       required: [true, "Please provide a car model"],
     },
     manufacturer: {
       type: String,
-      trim: true,
       lowercase: true,
       required: [true, "Please provide a car manufacturer"],
     },
     description: {
       type: String,
       trim: true,
-      lowercase: true,
       required: [true, "Please provide a car description"],
     },
     doors: {
