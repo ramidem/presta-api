@@ -50,110 +50,54 @@ router.post("/login", (req, res, next) => {
   }
 
   User.findOne({ username }).then((user) => {
-    if (user) {
-      bcrypt.compare(password, user.password).then((result) => {
-        if (result) {
-          let { _id, username, fullname, email, isAdmin } = user;
-          let token = jwt.sign({ _id: user._id }, "secret_key");
-
-          res.status(200).send({
-            token,
-            user: { _id, username, fullname, email, isAdmin },
-          });
-        } else {
-          res.status(400).send({
-            error: "Invalid password",
-          });
-        }
+    if (!user) {
+      return res.status(400).send({
+        error: "Check credentials",
       });
     } else {
-      res.status(404).send({
-        error: "Username does not exist",
+      // compare password given by user and hashed password in database
+      // Load hash from your password DB.
+      bcrypt.compare(password, user.password).then(function (result) {
+        // result == true
+        console.log(result);
+        if (result) {
+          // if comparing is successful
+          // create a token
+          // then send user details
+          let { _id, fullname, email, isAdmin } = user;
+          let token = jwt.sign({ _id: user._id }, "secret_key");
+          res.send({
+            message: "Login successful",
+            token,
+            user: {
+              _id,
+              fullname,
+              email,
+              isAdmin,
+              username,
+            },
+          });
+        } else {
+          res.status(400).send({ error: "Check credentials" });
+        }
       });
+
+      // else return error message
     }
   });
 });
 
 /*
- * Admin Only
  * PROTECTED ROUTES
  * ============================================================================
  */
-
-let auth = passport.authenticate("jwt", { session: false });
-
-/* method:  GET
- * route:   /users
- * desc:    get all users
- * auth:    admin
- * token:   yes
- */
-router.get("/", auth, (req, res, next) => {
-  User.find()
-    .then((users) => res.send(users))
-    .catch(next);
-});
-
-/* method:  GET
- * route:   /users/:username
- * desc:    get a user
- * auth:    admin
- * token:   yes
- */
-router.get("/:username", auth, (req, res, next) => {
-  User.findOne({ username: req.params.username })
-    .then((user) => {
-      let { _id } = req.user;
-      let { id } = user;
-
-      if (id == _id) {
-        res.send(user);
-      } else {
-        res.sendStatus(403);
-      }
-    })
-    .catch(next);
-});
-
-/* method:  PUT
- * route:   /users/:username
- * desc:    edit a user
- */
-// router.put("/:username", auth, (req, res, next) => {
-//   User.findOneAndUpdate({ username: req.params.username }, req.body, {
-//     new: true,
-//   })
-//     .then((user) => {
-//       let { _id } = req.user;
-//       let { id } = user;
-
-//       if (id == _id) {
-//         res.send(user);
-//       } else {
-//         res.sendStatus(403);
-//       }
-//     })
-//     .catch(next);
-// });
-
-/* method:  DELETE
- * route:   /users/:id
- * desc:    delete a user
- */
-// router.delete("/:id", (req, res, next) => {
-//   res.json({
-//     message: "delete a user",
-//   });
-// });
-
-/* method:  GET
- * route:   /users/profile
- * desc:    get user profile
- * auth:    yes
- * token:   yes
- */
-router.get("/profile", auth, (req, res, next) => {
-  res.send("hello");
-});
+// protected route
+router.get(
+  "/profile",
+  passport.authenticate("jwt", { session: false }),
+  (req, res, next) => {
+    res.send(req.user);
+  }
+);
 
 module.exports = router;
