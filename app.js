@@ -13,8 +13,8 @@ const users = require("./routes/users");
 const reservations = require("./routes/reservations");
 
 // connect to database using mongoose
-// mongoose.connect("mongodb://localhost:27017/presta", {
-mongoose.connect(process.env.ATLAS, {
+// mongoose.connect(process.env.ATLAS, {
+mongoose.connect("mongodb://localhost:27017/presta", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
@@ -46,9 +46,9 @@ app.get("/", (req, res) => {
 });
 
 // routes middlewares
-app.use("/cars", cars);
-app.use("/users", users);
-app.use("/reservations", reservations);
+app.use("/api/cars", cars);
+app.use("/api/users", users);
+app.use("/api/reservations", reservations);
 
 // error handling middleware
 app.use((err, req, res, next) => {

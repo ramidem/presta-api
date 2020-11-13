@@ -1,20 +1,31 @@
+require("dotenv").config();
+const cloudinary = require("cloudinary");
 const router = require("express").Router();
 const passport = require("passport");
 const multer = require("multer");
 
 const Car = require("./../models/Car");
 
-// setup multer
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "assets/images");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
+// setup multer and cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const upload = multer({ storage: storage });
+const storage = multer.diskStorage({});
+
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.match(/jpe|jpeg|png|gif$i/)) {
+      cb(new Error("File is not supported"), false);
+      return;
+    }
+
+    cb(null, true);
+  },
+});
 
 /* method:  GET
  * route:   /cars
@@ -66,38 +77,48 @@ const admin = (req, res, next) => {
  * route:   /cars
  * desc:    add a car
  */
-router.post("/", auth, admin, upload.single("image"), (req, res, next) => {
-  // let controlNumber = () => {
-  //   const chars = "PRESTA1234567890".split("");
-  //   const limit = 6;
-  //   let code = [];
-  //   for (let i = 0; i <= limit; i++) {
-  //     code.push(chars[Math.floor(Math.random() * (chars.length + 1))]);
-  //   }
-  //   return code.join("");
-  // };
-  // req.body.controlNumber = controlNumber();
-
-  req.body.image = "public/" + req.file.filename;
-
-  Car.create(req.body)
-    .then((car) => res.status(201).send(car))
-    .catch(next);
-});
+router.post(
+  "/",
+  auth,
+  admin,
+  upload.single("image"),
+  async (req, res, next) => {
+    try {
+      const uploaded = await cloudinary.v2.uploader.upload(req.file.path);
+      req.body.image = uploaded.secure_url;
+      Car.create(req.body)
+        .then((car) => res.status(201).send(car))
+        .catch(next);
+    } catch (err) {
+      res.status(500).json({ error: err });
+    }
+  }
+);
 
 /* method:  PUT
  * route:   /cars/:id
  * desc:    edit a car
  */
-router.put("/:id", auth, admin, upload.single("image"), (req, res, next) => {
-  if (req.file) {
-    req.body.image = "public/" + req.file.filename;
-  }
+router.put(
+  "/:id",
+  auth,
+  admin,
+  upload.single("image"),
+  async (req, res, next) => {
+    if (req.file) {
+      try {
+        const uploaded = await cloudinary.v2.uploader.upload(req.file.path);
+        req.body.image = uploaded.secure_url;
+      } catch (err) {
+        res.status(500).json({ error: err });
+      }
+    }
 
-  Car.findByIdAndUpdate(req.params.id, req.body, { new: true })
-    .then((car) => res.send(car))
-    .catch(next);
-});
+    Car.findByIdAndUpdate(req.params.id, req.body, { new: true })
+      .then((car) => res.send(car))
+      .catch(next);
+  }
+);
 
 /* method:  DELETE
  * route:   /cars/:id
